@@ -7,29 +7,30 @@ import random
 from collections import defaultdict
 import re
 import negation
+from negation import negations 
 
 # Checks for negations in sentences and creates a list of affected words
 def negCheck(tokens):
     positives = []
     negatives = []
     currentSentence = []
-    negative = false
+    negative = False
     for token in tokens:
-        if(token in negation):
-            negative = true
-        elif(re.match('[.!?]+')):
+        if(token in negations):
+            negative = True
+        elif(re.match('[.!?]+',token)):
             if negative:
                 negatives.extend(currentSentence)
                 currentSentence = []
-                negative = false
+                negative = False
             else:
                 positives.extend(currentSentence)
                 currentSentence = []
-    if not currentSentence:
-    elif negative:
+    #if not currentSentence:
+    if negative:
         negatives.extend(currentSentence)
         currentSentence = []
-        negative = false
+        negative = False
     else:
         positives.extend(currentSentence)
         currentSentence = []
