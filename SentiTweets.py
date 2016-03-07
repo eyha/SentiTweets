@@ -5,16 +5,18 @@ from nltk import TweetTokenizer
 import csv
 import random
 from collections import defaultdict
+import re
+import negation
+from negClauseLearn import negClauseLearner
 
 tests = []
-accuracy = 0
-
 tokenizer = TweetTokenizer()
 csvfile = open('trainingandtestdata/testdata.manual.2009.06.14.csv', 'rb')
 reader = csv.reader(csvfile, delimiter=',')
 rownum = 0
 sentiments = []
 tokens = [[]]
+
 for row in reader:
     colnum = 0
     for col in row:
@@ -91,11 +93,114 @@ def test():
     tests.append(accuracy)
     print("The number of correctly predicted posts is " + str(numCorrects) + " out of " + str(numTests) + ".")
     print("The accuracy was " + str(accuracy) + "%")
+    return accuracy    
 
-    
-for t in range(0,5):
-    test()
+# Checks for negations in sentences and creates a list of affected words
+def negCheck(tokens):
+    positives = []
+    negatives = []
+    currentSentence = []
+    negative = False
+    for token in tokens:
+        if(token in negation):
+            negative = true
+        elif(re.match('[.!?]+')):
+            if negative:
+                negatives.extend(currentSentence)
+                currentSentence = []
+                negative = false
+            else:
+                positives.extend(currentSentence)
+                currentSentence = []
+    #if not currentSentence:
+     #   break
+    if negative:
+        negatives.extend(currentSentence)
+        currentSentence = []
+        negative = false
+    else:
+        positives.extend(currentSentence)
+        currentSentence = []
+    return (positives,negatives)
+
+def negTesting():
+    #Divide into training and test data - randomly allocate 4/5 to training and 1/5 to test
+    position = []
+    posPosts = []
+    negPosts = []
+    neuPosts = []
+    for posts in range(0,len(sentiments)):
+        position.insert(posts,random.randint(0,4))
+        if position[posts] != 0:
+            posNegs = negCheck(tokens[posts])
+            if sentiments[posts] == 4:
+                posPosts.extend(posNegs[0])
+                negPosts.extend(posNegs[1])
+            elif sentiments[posts] == 0:
+                negPosts.extend(posNegs[1])
+                posPosts.extend(posNegs[0])
+            else:
+                neuPosts.extend(posNegs[0])
+                neuPosts.extend(posNegs[1])
+
+    wordBag = defaultdict(list)
+    for token in posPosts:
+        wordBag[token].append(5)
+    for token in negPosts:
+        wordBag[token].append(-5)
+
+    for token in neuPosts:
+        wordBag[token].append(0)
+
+    wordSen = {}
+    for word in wordBag:
+    ##    print("Word: " + word + ", instances: " + str(len(wordBag[word])) + ", values: ")
+    ##    for value in wordBag[word]:
+    ##            print(value, end=" ")
+    ##    print("Total = " + str(sum(wordBag[word])))
+        wordSen[word] = sum(wordBag[word]) / float(len(wordBag[word]))
+    ##    print("word: " + word + ", word sentiment: " + str(wordSen[word]))
+        
+    #testing phase
+    corrects = []
+    for posts in range(0,len(sentiments)):
+        if position[posts] == 0:
+            score = 0
+            for token in tokens[posts]:
+                if token in wordSen:
+                    score += float(wordSen[token])
+    ##                print(score)
+            if score >= 2.5:
+                corrects.append(sentiments[posts] == 4)
+    ##            print("postive: " + str(sentiments[posts] == 4))
+            elif score <= -2.5:
+                corrects.append(sentiments[posts] == 0)
+    ##            print("negative: " + str(sentiments[posts] == 0))
+            else:
+                corrects.append(sentiments[posts] == 2)
+    ##            print("neutral: " + str(sentiments[posts] == 2))
+                
+    ##print(corrects)
+    numCorrects = sum(corrects)
+    numTests = len(corrects)
+    accuracy = float(numCorrects*100/float(numTests))
+    tests.append(accuracy)
+    print("The number of correctly predicted posts is " + str(numCorrects) + " out of " + str(numTests) + ".")
+    print("The accuracy was " + str(accuracy) + "%")
+    return accuracy
+
 output = open('SentiTweetsOutput.csv', 'ab')
 writer = csv.writer(output, 'excel')
+    
+for t in range(0,5):
+    tests.append(test())
 writer.writerow(tests)
+
+tests = []
+negClauseTest = negClauseLearner()
+for t in range(0,5):
+    tests.append(negClauseTest.negTesting(sentiments,tokens))
+print(tests)
+writer.writerow(tests)
+
 output.close()
