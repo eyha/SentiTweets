@@ -5,10 +5,9 @@ from nltk import TweetTokenizer
 import csv
 import random
 from collections import defaultdict
-import re
-import negation
 from negClauseLearn import negClauseLearner
 from bigrams import bigramLearner
+from emotIden import emoticonLearner
 
 tests = []
 tokenizer = TweetTokenizer()
@@ -206,6 +205,17 @@ for t in range(0,5):
     tests.append(negClauseTest.negTesting(sentiments,tokens))
 print(tests)
 writer.writerow(tests)
+output.close()
+
+tests = []
+output = open('emotIdenOutput.csv', 'ab')
+writer = csv.writer(output, 'excel')
+emotIdenTest = emoticonLearner()
+for t in range(0,5):
+    tests.append(emotIdenTest.emoticonTesting(sentiments,tokens))
+print(tests)
+writer.writerow(tests)
+output.close()
 
 tests = []
 output = open('bigramOutput.csv', 'ab')
@@ -215,3 +225,4 @@ for t in range(0,5):
     tests.append(bigramTest.bigramTesting(sentiments,tokens))
 print(tests)
 writer.writerow(tests)
+output.close()
