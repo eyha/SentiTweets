@@ -8,6 +8,7 @@ from collections import defaultdict
 import re
 import negation
 from negClauseLearn import negClauseLearner
+from bigrams import bigramLearner
 
 tests = []
 tokenizer = TweetTokenizer()
@@ -195,12 +196,22 @@ writer = csv.writer(output, 'excel')
 for t in range(0,5):
     tests.append(test())
 writer.writerow(tests)
+output.close()
 
 tests = []
+output = open('negClauseLearnOutput.csv', 'ab')
+writer = csv.writer(output, 'excel')
 negClauseTest = negClauseLearner()
 for t in range(0,5):
     tests.append(negClauseTest.negTesting(sentiments,tokens))
 print(tests)
 writer.writerow(tests)
 
-output.close()
+tests = []
+output = open('bigramOutput.csv', 'ab')
+writer = csv.writer(output, 'excel')
+bigramTest = bigramLearner()
+for t in range(0,5):
+    tests.append(bigramTest.bigramTesting(sentiments,tokens))
+print(tests)
+writer.writerow(tests)
