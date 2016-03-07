@@ -42,7 +42,7 @@ posPosts = []
 negPosts = []
 neuPosts = []
 for posts in range(0,len(sentiments)):
-    position.insert(posts,random.randint(0,5))
+    position.insert(posts,random.randint(0,4))
     if position[posts] != 0:
         if sentiments[posts] == 4:
             posPosts.extend(bigrams[posts])

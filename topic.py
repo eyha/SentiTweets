@@ -20,6 +20,7 @@ for row in reader:
         # The column with the actual sentiment of the post
         if colnum == 0:
             sentiments.insert(rownum,int(col))
+        # The topic of the post
         if colnum == 3:
             realTopics.insert(rownum,col)
         # The content of the post
@@ -40,7 +41,7 @@ posPosts = []
 negPosts = []
 neuPosts = []
 for posts in range(0,len(sentiments)):
-    position.insert(posts,random.randint(0,5))
+    position.insert(posts,random.randint(0,4))
     if position[posts] != 0:
         if sentiments[posts] == 4:
             posPosts.extend(tokens[posts])
