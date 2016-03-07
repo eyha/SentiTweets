@@ -10,3 +10,4 @@ def findEmotes(wordBag):
         if nonword.match(word):
             emoticons.append(word)
     return emoticons
+    
