@@ -1,0 +1,91 @@
+\documentclass[12pt,twoside]{report}
+\usepackage{pdfpages}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{tabto}
+\usepackage{titlesec}
+	\titleformat{\chapter}[display]   
+	{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{10pt}{\Huge}   
+	\titlespacing*{\chapter}{0pt}{-50pt}{20pt}
+\begin{document}
+\begin{titlepage}
+	\begin{center}
+		\vspace*{1cm}
+		\Huge \textbf{$ --- for dash $\\}
+			
+		\vspace{1cm}
+			
+		\Large Edwin Aldridge\\exa12u
+			
+		\vspace{1cm}
+			
+		\Large School of Computer Science and Information Technology\\ University of Nottingham
+			
+		\vspace{1cm}
+			
+		\normalsize I hereby declare that this dissertation is all my own work, except as indicated in the text:\\
+		\vspace{0.25cm}
+		\large Signature .................................
+	\end{center}
+\end{titlepage}
+\vspace*{1cm}
+\begin{flushright}
+	\addcontentsline{toc}{chapter}{Acknowledgements}
+	\Large \textbf{Acknowledgements} \vspace{1cm} \normalsize \\
+\end{flushright}
+\begin{abstract}
+	\addcontentsline{toc}{chapter}{Abstract}
+\end{abstract}
+\tableofcontents
+\listoffigures
+\chapter{Introduction}
+	
+	%\cite{FaceBkOcAcq}
+	%\section{Aims and Objectives}
+\chapter{Background}
+	Sentiment analysis as a field is a well-established and well known field of natural language processing, and has a wide variety of applications in the academic and business world. One particular area that it has been put to good use is in the analysis of the multitude of user data 
+	\section{Explanation of Concepts}
+		\subsection{Twitter}
+		\subsection{Science of Emotion}
+	\section{Data}
+		%\cite[p.44-45]{DiffInno}
+	\section{Literature Review}
+\chapter{Method}
+	\section{Model}
+		\subsection{Description}
+		The base of the model, and the baseline against which it is compared, is a naive bayes classifier.
+				\subsubsection{Algorithm}
+				\subsubsection{Topic Detection}
+		\subsection{Refinements}
+			\subsubsection{Slang Terms/Truncations}
+			\subsubsection{Non-literal Statements}
+		%	\subsubsection{Hashtags}
+			\subsubsection{Emoticons and Abbreviations}
+			\subsubsection{Negation}
+			\subsubsection{HashTags}
+			Made somewhat difficult by the lack of hashtags in the sample Twitter posts.
+			\subsubsection{Topic Based Sentiment}
+			
+		%	\subsubsection{Differences between countries (???)}
+		\subsection{Sentiment Calculation}
+		What model should be used to calculate the positivity of a particular piece of text? Like with most machine learning tasks, the type of model used to classify the data is crucial to the understanding gained from it.
+		\subsection{Model Training}
+\chapter{Results}
+	\section{Testing}
+\chapter{Discussion}
+	\section{Development Issues}
+	\section{Recommended Changes}
+\chapter{Conclusions}
+	\section{Achievement of Objectives}
+	\section{Limitations}
+	image based analysis
+		\subsection{Future Work}
+			\subsubsection{Tracking followers}
+			\subsubsection{Retweets, etc to determine scope of sentiment}
+			\subsubsection{Expansions}
+			(analysis of the subject on the population, analysis of the individual)
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{unsrt}
+\bibliography{Dissertation2}
