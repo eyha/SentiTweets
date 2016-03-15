@@ -5,6 +5,40 @@ from nltk import TweetTokenizer
 import csv
 import random
 from collections import defaultdict
+import re
+import negation
+
+# Checks for negations in sentences and creates a list of affected words
+def negCheck(tokens):
+    positives = []
+    negatives = []
+    currentSentence = []
+    negative = false
+    negWords = []
+    for word in range(0,len(negation)):
+        negWords[word] = re.compile(negation[word])
+    for token in tokens:
+        for neg in negWords:
+            if neg.match(token)
+        if(token in negation):
+            negative = true
+        elif(re.match('[.!?]+')):
+            if negative:
+                negatives.extend(currentSentence)
+                currentSentence = []
+                negative = false
+            else:
+                positives.extend(currentSentence)
+                currentSentence = []
+    if not currentSentence:
+    elif negative:
+        negatives.extend(currentSentence)
+        currentSentence = []
+        negative = false
+    else:
+        positives.extend(currentSentence)
+        currentSentence = []
+    return (positives,negatives)
 
 tokenizer = TweetTokenizer()
 csvfile = open('trainingandtestdata/testdata.manual.2009.06.14.csv', 'rb')
@@ -44,6 +78,7 @@ neuPosts = []
 for posts in range(0,len(sentiments)):
     position.insert(posts,random.randint(0,4))
     if position[posts] != 0:
+        posNegs = negCheck(bigrams[posts])
         if sentiments[posts] == 4:
             posPosts.extend(bigrams[posts])
         elif sentiments[posts] == 0:
