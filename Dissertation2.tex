@@ -1,4 +1,5 @@
-\documentclass[12pt,twoside]{report}
+\documentclass{acm_proc_article-sp}
+
 \usepackage{pdfpages}
 \usepackage{enumitem}
 \usepackage{float}
@@ -6,86 +7,124 @@
 \usepackage{url}
 \usepackage{tabto}
 \usepackage{titlesec}
-	\titleformat{\chapter}[display]   
-	{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{10pt}{\Huge}   
-	\titlespacing*{\chapter}{0pt}{-50pt}{20pt}
-\begin{document}
-\begin{titlepage}
-	\begin{center}
-		\vspace*{1cm}
-		\Huge \textbf{$ --- for dash $\\}
-			
-		\vspace{1cm}
-			
-		\Large Edwin Aldridge\\exa12u
-			
-		\vspace{1cm}
-			
-		\Large School of Computer Science and Information Technology\\ University of Nottingham
-			
-		\vspace{1cm}
-			
-		\normalsize I hereby declare that this dissertation is all my own work, except as indicated in the text:\\
-		\vspace{0.25cm}
-		\large Signature .................................
-	\end{center}
-\end{titlepage}
-\vspace*{1cm}
-\begin{flushright}
-	\addcontentsline{toc}{chapter}{Acknowledgements}
-	\Large \textbf{Acknowledgements} \vspace{1cm} \normalsize \\
-\end{flushright}
-\begin{abstract}
-	\addcontentsline{toc}{chapter}{Abstract}
-\end{abstract}
-\tableofcontents
-\listoffigures
-\chapter{Introduction}
+	\setcounter{secnumdepth}{4}
 	
+	\titleformat{\paragraph}
+	{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+	\titlespacing*{\paragraph}
+	{0pt}{1em}{0pt}
+
+\begin{document}
+\title{Defining the Sentiment of Tweets}
+\numberofauthors{2} 
+\author{
+	\alignauthor Edwin Aldridge\\ 
+	\affaddr{University of Nottingham}\\
+	\email{psyea2@nottingham.ac.uk}
+	\alignauthor Michel Valstar\\ 
+	\affaddr{University of Nottingham}\\
+	%\affaddr{Nottingham, England, NG7 2TU}\\
+	\email{pszmv@nottingham.ac.uk}
+}
+\maketitle
+%\begin{titlepage}
+%	\begin{center}
+%		\vspace*{1cm}
+%		\Huge \textbf{$ --- for dash $\\}
+%%		\vspace{1cm}
+%		
+%		\Large Edwin Aldridge\\exa12u
+%			
+%		\vspace{1cm}
+%			
+%		\Large School of Computer Science and Information Technology\\ University of Nottingham
+			
+%		\vspace{1cm}
+			
+%		\normalsize I hereby declare that this dissertation is all my own work, except as indicated in the text:\\
+%		\vspace{0.25cm}
+%		\large Signature .................................
+%	\end{center}
+%\end{titlepage}
+%\vspace*{1cm}
+%%\begin{flushright}
+	%%\addcontentsline{toc}{chapter}{Acknowledgements}
+	%%\Large \textbf{Acknowledgements} \vspace{1cm} \normalsize \\
+%%\end{flushright}
+\begin{abstract}
+	The purpose of this project was to improve the ability to analyse social media traffic for commercial and public uses. The approach taken was to develop a sentiment analysis algorithm specialised for the analysis of Twitter posts, or 'tweets', one of the more popular social media networks, which have a variety of idiosyncrasies that makes analysing its posts more difficult. The model takes advantage of and compensates for the various features of typical Twitter posts -- such as hashtagging, regular use of abbreviations and emoticons -- in order to increase the accuracy of its predictions. \\
+	\\*
+	The project was implemented with the help of Python's Natural Language Processing Toolkit to make use of its impressive , implementing a derivative of a naive Bayes model that used the various refinements to modify the prior probability of each sentiment. \\
+	\\*
+	The complete product as of yet is functional, with () improvement over a more traditional approach. It is useable for its intended purpose, though there are various refinements that have yet to be implemented that would be likely to improve its effectiveness considerably.
+	%%\addcontentsline{toc}{chapter}{Abstract}
+\end{abstract}
+%%\tableofcontents
+%%\listoffigures
+\section{Introduction}
+	In the modern world, vast quantities of new information is produced every second by the general public, thanks to the advent of social media and the near ubiquitous access to the internet that allows access to it at any time of the day. With this new ability, people all over the world from all walks of life are submitting information about themselves, their opinions of various subjects, and their actions, all for public scrutiny.\\
+	\\*
+	This easy access to information from such a wide variety of people provides a previously unknown opportunity for many organisations, both commercial and public, to extract information about various topics of interest with vastly greater accuracy and quantity than before, due  to the greater amount of data to sample from. \\
+	\\*
+	However, this availability of data poses a variety of challenges in its own right. The data is rarely in a specific format, making analysis of the data considerably more unreliable, and collecting data that is in the correct format to be reliably analysed is difficult due to the sheer variety of data. \\ 
+	\\*
+	In this project, the aim was to create a way to handle the various complexities that are common to 
 	%\cite{FaceBkOcAcq}
-	%\section{Aims and Objectives}
-\chapter{Background}
-	Sentiment analysis as a field is a well-established and well known field of natural language processing, and has a wide variety of applications in the academic and business world. One particular area that it has been put to good use is in the analysis of the multitude of user data 
-	\section{Explanation of Concepts}
-		\subsection{Twitter}
-		\subsection{Science of Emotion}
-	\section{Data}
+\section{Background}
+	\subsection{Explanation of Concepts}
+	Before the project is discussed in any greater detail, it would perhaps to give some background information specific concepts key to the project that some may be unfamiliar with. These would be the field of sentiment analysis, which is the type of algorithm that this project developed, and information Twitter and its posting format, which is the social network whose posts the project was developed to analyse.
+		\subsubsection{Sentiment Analysis}
+		Sentiment analysis as a field is a well-established and well known field of natural language processing, and has a wide variety of applications in the academic and business world. It focuses on determining the sentiment of a particular piece of text; that is to say, determining how the topics discussed in the text are viewed (citation needed). \\
+		\\*
+		One particular area in which it has been put to good use is the analysis of large quantities of user data, such as customer reviews and survey responses, due to its efficiency and speed compared to manual analysis (citation needed). For this reason, it is very useful for analysis of social media networks, as perhaps the most notable characteristic of the data is the volume of it (citation needed).
+		\subsubsection{Twitter}
+		It was decided for the purpose of this project to focus on Twitter posts for the model, due to the specific features of its posts: it has a specific format that makes analysing its posts simpler, but that same format makes standard sentiment analysis more difficult and less accurate.\\
+		\\*
+		Twitter is currently one of the most popular social media networks, with an active userbase of 320 million users\cite{TwitAbt}. Unlike some social media networks, its has no particular focus on any particular topics or users, so its userbase is much more diverse than many other comparably sized networks.\\
+		\\*
+		On Twitter, users submit 'tweets', composed of no greater than (something) characters. This is explained as being useful for the purpose of encouraging brevity and thought about the topic of choice.\\
+		\\*
+		These factors can make tweets very useful for the purpose of sentiment analysis, due to the 
 		%\cite[p.44-45]{DiffInno}
-	\section{Literature Review}
-\chapter{Method}
-	\section{Model}
-		\subsection{Description}
-		The base of the model, and the baseline against which it is compared, is a naive bayes classifier.
-				\subsubsection{Algorithm}
-				\subsubsection{Topic Detection}
-		\subsection{Refinements}
-			\subsubsection{Slang Terms/Truncations}
-			\subsubsection{Non-literal Statements}
+	\subsection{Literature Review}
+	Work has been done in the past related to the analysis of 
+\section{Method}
+	\subsection{Data}
+	\subsection{Model}
+		\subsubsection{Description}
+		The main concept behind the model -- and the baseline against which it is compared -- is a naive bayes classifier, where various refinements have been applied to its (term for determining probability of correctness) to account for Twitter features and their typical effect on sentiment in a Twitter post.
+		\subsubsection{Algorithm}
+		\subsubsection{Topic Detection}
+		\subsubsection{Refinements}
+			\paragraph{Slang Terms/Truncations}
+			\paragraph{Non-literal Statements}
 		%	\subsubsection{Hashtags}
-			\subsubsection{Emoticons and Abbreviations}
-			\subsubsection{Negation}
-			\subsubsection{HashTags}
+			\paragraph{Emoticons and Abbreviations}
+			\paragraph{Negation}
+			A common issue in sentiment analysis in general is the issue of how a word rarely bears the same sentiment in different contexts. One of the most significant cases of this is in the case of negation -- where the presence of words such as 'not' inverts the positivity of an adjective or statement -- the sentiment of the words around it 
+			\paragraph{HashTags}
 			Made somewhat difficult by the lack of hashtags in the sample Twitter posts.
-			\subsubsection{Topic Based Sentiment}
+			\paragraph{Topic Based Sentiment}
 			
 		%	\subsubsection{Differences between countries (???)}
-		\subsection{Sentiment Calculation}
-		What model should be used to calculate the positivity of a particular piece of text? Like with most machine learning tasks, the type of model used to classify the data is crucial to the understanding gained from it.
-		\subsection{Model Training}
-\chapter{Results}
-	\section{Testing}
-\chapter{Discussion}
-	\section{Development Issues}
-	\section{Recommended Changes}
-\chapter{Conclusions}
-	\section{Achievement of Objectives}
-	\section{Limitations}
+		\subsubsection{Sentiment Calculation}
+		What model should be used to calculate the positivity of a particular piece of text? Like with most machine learning tasks, the type of model used to classify the data is crucial to the understanding gained from it. 
+		\subsubsection{Model Training}
+\section{Results}
+	\subsection{Testing}
+\section{Discussion}
+	\subsection{Development Issues}
+	\subsection{Recommended Changes}
+\section{Conclusions}
+	\subsection{Achievement of Objectives}
+	\subsection{Limitations}
 	image based analysis
-		\subsection{Future Work}
-			\subsubsection{Tracking followers}
-			\subsubsection{Retweets, etc to determine scope of sentiment}
-			\subsubsection{Expansions}
+		\subsubsection{Future Work}
+			\paragraph{Tracking followers}
+			\paragraph{Retweets, etc to determine scope of sentiment}
+			\paragraph{Expansions}
 			(analysis of the subject on the population, analysis of the individual)
-\addcontentsline{toc}{section}{References}
+%%\addcontentsline{toc}{section}{References}
 \bibliographystyle{unsrt}
 \bibliography{Dissertation2}
+\end{document}
