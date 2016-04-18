@@ -62,13 +62,13 @@
 %%\tableofcontents
 %%\listoffigures
 \section{Introduction}
-	In the modern world, vast quantities of new information is produced every second by the general public, thanks to the advent of social media and the near ubiquitous access to the internet that allows access to it at any time of the day. With this new ability, people all over the world from all walks of life are submitting information about themselves, their opinions of various subjects, and their actions, all for public scrutiny.\\
+	In the modern world, vast quantities of new information is produced every second by the general public, thanks to the advent of social media and the near ubiquitous access to the internet through mechanisms such as wireless networks and high-speed mobile internet that allows one to connect to social media at any time of the day. With this new ability, people all over the world from all walks of life are submitting information about themselves, their opinions of various subjects, and their actions, all for public scrutiny.\\
 	\\*
 	This easy access to information from such a wide variety of people provides a previously unknown opportunity for many organisations, both commercial and public, to extract information about various topics of interest with vastly greater accuracy and quantity than before, due  to the greater amount of data to sample from. \\
 	\\*
 	However, this availability of data poses a variety of challenges in its own right. The data is rarely in a specific format, making analysis of the data considerably more unreliable, and collecting data that is in the correct format to be reliably analysed is difficult due to the sheer variety of data. \\ 
 	\\*
-	In this project, the aim was to create a way to handle the various complexities that are common to 
+	In this project, the aim was to create a way to handle the various intricacies that are common to a particular social media network, in this case Twitter.
 	%\cite{FaceBkOcAcq}
 \section{Background}
 	\subsection{Explanation of Concepts}
@@ -84,24 +84,28 @@
 		\\*
 		On Twitter, users submit 'tweets', composed of no greater than (something) characters. This is explained as being useful for the purpose of encouraging brevity and thought about the topic of choice.\\
 		\\*
-		These factors can make tweets very useful for the purpose of sentiment analysis, due to the 
+		These factors can make tweets very useful for the purpose of sentiment analysis, due to the character restriction typically constraining the post content to one subject only
 		%\cite[p.44-45]{DiffInno}
 	\subsection{Literature Review}
-	Work has been done in the past related to the analysis of 
+	Work has been done in the past related to the analysis of social media through natural language processing, with the following being particularly notable examples. 
 \section{Method}
 	\subsection{Data}
 	\subsection{Model}
 		\subsubsection{Description}
 		The main concept behind the model -- and the baseline against which it is compared -- is a naive bayes classifier, where various refinements have been applied to its (term for determining probability of correctness) to account for Twitter features and their typical effect on sentiment in a Twitter post.
 		\subsubsection{Algorithm}
-		\subsubsection{Topic Detection}
+		The naive bayes classifier was implemented with Python, using some of the Natural Language Toolkit features in order to identify tokens and .
+%		\subsubsection{Topic Detection}
 		\subsubsection{Refinements}
+		The following refinements have been applied to the model, in the form of 
 			\paragraph{Slang Terms/Truncations}
-			\paragraph{Non-literal Statements}
-		%	\subsubsection{Hashtags}
+		%	\paragraph{Non-literal Statements}
 			\paragraph{Emoticons and Abbreviations}
+			Emoticons and abbreviations are common features of Twitter posts, due to the constraints on the number of characters.
 			\paragraph{Negation}
-			A common issue in sentiment analysis in general is the issue of how a word rarely bears the same sentiment in different contexts. One of the most significant cases of this is in the case of negation -- where the presence of words such as 'not' inverts the positivity of an adjective or statement -- the sentiment of the words around it 
+			A common issue in sentiment analysis in general is the issue of how a word rarely bears the same sentiment in different contexts. One of the most significant cases of this is in the case of negation -- where the presence of words of various patterns or words such as 'not' inverts the positivity of an adjective or statement -- the sentiment of the words around it. There are both (individual words), where the presence of certain words signifies the negation, and (prefixes), where the addition of certain prefixes or suffixes negates the word (citation for types of negation).
+			
+			Over the course of the project, two ways to identify negation were found: reversing the polarity of the entire sentence/clause, or reversing the polarity of the surrounding words. 
 			\paragraph{HashTags}
 			Made somewhat difficult by the lack of hashtags in the sample Twitter posts.
 			\paragraph{Topic Based Sentiment}
