@@ -33,47 +33,65 @@ position = []
 posPosts = []
 negPosts = []
 neuPosts = []
-for posts in range(0,len(sentiments)):
-    position.insert(posts,random.randint(0,5))
+numPosPosts = numNegPosts = numNeuPosts = 0
+for posts in range(len(sentiments)):
+    position.insert(posts,random.randint(0,4))
     if position[posts] != 0:
         if sentiments[posts] == 4:
             posPosts.extend(tokens[posts])
+            numPosPosts += 1
         elif sentiments[posts] == 0:
             negPosts.extend(tokens[posts])
+            numNegPosts += 1
         else:
             neuPosts.extend(tokens[posts])
+            numNeuPosts += 1
 
 wordBag = defaultdict(list)
 for token in posPosts:
-    wordBag[token].append(5)
+    wordBag[token].append(1)
 for token in negPosts:
-    wordBag[token].append(-5)
-
+    wordBag[token].append(-1)
 for token in neuPosts:
     wordBag[token].append(0)
 
-wordSen = {}
+## Calculate Prior
+numTestPosts = numPosPosts + numNegPosts + numNeuPosts
+priorPos = numPosPosts / float(numTestPosts)
+priorNeg = numNegPosts / float(numTestPosts)
+priorNeu = numNeuPosts / float(numTestPosts)
+
+# Calculate p(x) and likelihoods for words
+wordSen = defaultdict(list)
+probWordOcc = {} 
 for word in wordBag:
 ##    print("Word: " + word + ", instances: " + str(len(wordBag[word])) + ", values: ")
 ##    for value in wordBag[word]:
 ##            print(value, end=" ")
 ##    print("Total = " + str(sum(wordBag[word])))
-    wordSen[word] = sum(wordBag[word]) / float(len(wordBag[word]))
+    if len(wordBag[word]) > 2:
+        probWordOcc[word] = len(wordBag[word]) / float(numTestPosts)
+        posLike = wordBag[word].count(1) / float(len(wordBag[word]))
+        negLike = wordBag[word].count(-1) / float(len(wordBag[word]))
+        neuLike = wordBag[word].count(0) / float(len(wordBag[word]))
+        wordSen[word] = [posLike,negLike,neuLike]
 ##    print("word: " + word + ", word sentiment: " + str(wordSen[word]))
     
 #testing phase
 corrects = []
-for posts in range(0,len(sentiments)):
+for posts in range(len(sentiments)):
     if position[posts] == 0:
-        score = 0
+        postProbs = [1,1,1]
         for token in tokens[posts]:
             if token in wordSen:
-                score += float(wordSen[token])
-##                print(score)
-        if score >= 2.5:
+                for i in range(3):
+                    postProbs[i] *= (wordSen[token][i] * priorPos / float(probWordOcc[token]))
+##                print(postProbs)
+        predictedIndex = postProbs.index(max(postProbs))
+        if predictedIndex == 0:
             corrects.append(sentiments[posts] == 4)
 ##            print("postive: " + str(sentiments[posts] == 4))
-        elif score <= -2.5:
+        elif predictedIndex == 1:
             corrects.append(sentiments[posts] == 0)
 ##            print("negative: " + str(sentiments[posts] == 0))
         else:
@@ -82,3 +100,4 @@ for posts in range(0,len(sentiments)):
             
 ##print(corrects)
 print("The number of correctly predicted posts is " + str(sum(corrects)) + " out of " + str(len(corrects)))
+print("That's about " + str(sum(corrects) * 100 / float(len(corrects))) + "%")
