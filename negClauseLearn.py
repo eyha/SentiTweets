@@ -17,17 +17,18 @@ class negClauseLearner:
         currentSentence = []
         negative = False
         for token in tokens:
+            currentSentence.append(token)
             if(token in negations):
                 negative = True
             elif(re.match('[.!?]+',token)):
                 if negative:
                     negatives.extend(currentSentence)
+                    # print(currentSentence)
                     currentSentence = []
                     negative = False
                 else:
                     positives.extend(currentSentence)
                     currentSentence = []
-        #if not currentSentence:
         if negative:
             negatives.extend(currentSentence)
             currentSentence = []
@@ -35,6 +36,8 @@ class negClauseLearner:
         else:
             positives.extend(currentSentence)
             currentSentence = []
+        # print(positives)
+        # print(negatives)
         return (positives,negatives)
 
     #tokenizer = TweetTokenizer()
