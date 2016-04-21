@@ -1,7 +1,7 @@
 import re
 
 def hashTags(post):
-    hash = re.compile('^#[a-zA-Z0-9]+')
+    hash = re.compile('^[#@][a-zA-Z0-9]+')
     tags = []
     # There will possibly be more than one hashtag. 
     # Whilst one may be for the topic as a whole, the others are potentially very useful for sentiment analysis

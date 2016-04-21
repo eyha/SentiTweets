@@ -80,7 +80,7 @@ class emoticonLearner:
         for token in neuPosts:
             emoteBag[token].append(0)
 
-        print(emoteBag.keys())
+        # print(emoteBag.keys())
 
         emoteSen = {}
         for emote in emoteBag:
