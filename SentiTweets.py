@@ -40,40 +40,45 @@ class sentiLearn:
     wordSen = defaultdict(list)
     probWordOcc = {} 
     position = []
-    def train(self):
-        #Divide into training and test data - randomly allocate 4/5 to training and 1/5 to test
+    numPosPosts = numNegPosts = numNeuPosts = 0
+    
+    #Divide into training and test data - randomly allocate 4/5 to training and 1/5 to test
+    def getData(self):
         self.position = []
         posPosts = []
         negPosts = []
         neuPosts = []
-        numPosPosts = numNegPosts = numNeuPosts = 0
         for posts in range(0,len(sentiments)):
             self.position.insert(posts,random.randint(0,4))
             if self.position[posts] != 0:
                 if sentiments[posts] == 4:
                     posPosts.extend(tokens[posts])
-                    numPosPosts += 1
+                    self.numPosPosts += 1
                 elif sentiments[posts] == 0:
                     negPosts.extend(tokens[posts])
-                    numNegPosts += 1
+                    self.numNegPosts += 1
                 else:
                     neuPosts.extend(tokens[posts])
-                    numNeuPosts += 1
-
+                    self.numNeuPosts += 1
+        self.numTestPosts = self.numPosPosts + self.numNegPosts + self.numNeuPosts
+        return [posPosts,negPosts,neuPosts]
+    
+    def train(self):
+        trainData = self.getData()
+        #Count the number of instances of each token
         wordBag = defaultdict(list)
-        for token in posPosts:
+        for token in trainData[0]:
             wordBag[token].append(1)
-        for token in negPosts:
+        for token in trainData[1]:
             wordBag[token].append(-1)
-        for token in neuPosts:
+        for token in trainData[2]:
             wordBag[token].append(0)
             
         ## Calculate Prior
-        self.numTestPosts = numPosPosts + numNegPosts + numNeuPosts
         self.priors = [0.0,0.0,0.0]
-        self.priors[0] = numPosPosts / float(self.numTestPosts)
-        self.priors[1] = numNegPosts / float(self.numTestPosts)
-        self.priors[2] = numNeuPosts / float(self.numTestPosts)
+        self.priors[0] = self.numPosPosts / float(self.numTestPosts)
+        self.priors[1] = self.numNegPosts / float(self.numTestPosts)
+        self.priors[2] = self.numNeuPosts / float(self.numTestPosts)
 
         # Calculate p(x) and likelihoods for words
         self.wordSen = defaultdict(list)
