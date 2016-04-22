@@ -38,7 +38,6 @@ class sentiLearn:
     numTestPosts = 0
     priors = []
     wordSen = defaultdict(list)
-    # probWordOcc = {}
     evidences = defaultdict(list)
     position = []
     numPosPosts = numNegPosts = numNeuPosts = 0
@@ -82,15 +81,14 @@ class sentiLearn:
         self.priors[2] = self.numNeuPosts / float(self.numTestPosts)
         # print("Priors are: " + str(self.priors))
 
-        # Calculate p(x) and likelihoods for words
+        ## Calculate p(x) and likelihoods for words
         self.wordSen = defaultdict(list)
-        # self.probWordOcc = {}
         self.evidences = defaultdict(list)
         for word in wordBag:
-        ##    print("Word: " + word + ", instances: " + str(len(wordBag[word])) + ", values: ")
-        ##    for value in wordBag[word]:
-        ##            print(value, end=" ")
-        ##    print("Total = " + str(sum(wordBag[word])))
+            # print("Word: " + word + ", instances: " + str(len(wordBag[word])) + ", values: ")
+            # for value in wordBag[word]:
+                # print(value, end=" ")
+            # print("Total = " + str(sum(wordBag[word])))
             if len(wordBag[word]) > 2:
                 # print("For word " + word + ", the length is " + str(len(wordBag[word])) + " and the number of posts is " + str(self.numTestPosts))
                 # self.probWordOcc[word] = len(wordBag[word])
@@ -98,7 +96,7 @@ class sentiLearn:
                 posEvidence = wordBag[word].count(1) / float(len(wordBag[word])) * self.priors[0] + (wordBag[word].count(-1) + wordBag[word].count(0)) / float(len(wordBag[word])) * (self.priors[1] + self.priors[2])
                 negEvidence = wordBag[word].count(-1) / float(len(wordBag[word])) * self.priors[1] + (wordBag[word].count(1) + wordBag[word].count(0)) / float(len(wordBag[word])) * (self.priors[0] + self.priors[2])
                 neuEvidence = wordBag[word].count(0) / float(len(wordBag[word])) * self.priors[2] + (wordBag[word].count(-1) + wordBag[word].count(1)) / float(len(wordBag[word])) * (self.priors[1] + self.priors[1])
-                self.evidences[word].extend([posEvidence,negEvidence,neuEvidence])
+                self.evidences[word].extend([posEvidence,negEvidence,neuEvidence])            
                 
                 posLike = wordBag[word].count(1) / float(len(wordBag[word]))
                 negLike = wordBag[word].count(-1) / float(len(wordBag[word]))
@@ -106,38 +104,41 @@ class sentiLearn:
                 self.wordSen[word] = [posLike,negLike,neuLike]
                 # print("word: '" + word + "', word sentiment: " + str(self.wordSen[word]))
 
+    def postCheck(self,postIndex):
+        postProbs = [1.0,1.0,1.0]
+        for i in range(3):
+            for token in tokens[postIndex]:
+                if token in self.wordSen:
+                    if self.wordSen[token][i] != 0.0:
+                        postProbs[i] *= (self.wordSen[token][i])
+                        # print("Position " + str(i) + " - postsProb after token '" + token + "': " + str(postProbs[i]))
+                    if self.evidences[token][i] != 0:
+                        # evidence = self.wordSen[token][i] * self.priors[i]
+                        # evidence += ((sum(self.wordSen[token]) - self.wordSen[token][i]) * (sum(self.priors) - self.priors[i]))
+                        postProbs[i] /= float(self.evidences[token][i])
+                    # print("Position " + str(i) + " - evidence after token '" + token + "': " + str(self.evidences[token][i]))
+                    # print(self.probWordOcc[token])
+                    # print(postProbs)
+            postProbs[i] *= float(self.priors[i])
+        print("Final Probability is: " + str(postProbs))
+        return postProbs
+
     def test(self):    
         #testing phase
         corrects = []
-        for posts in range(len(sentiments)):
-            if self.position[posts] == 0:
-                postProbs = [1,1,1]
-                for i in range(3):
-                    for token in tokens[posts]:
-                        if token in self.wordSen:
-                            if self.wordSen[token][i] != 0.0:
-                                postProbs[i] *= (self.wordSen[token][i])
-                                # print("Position " + str(i) + " - postsProb after token '" + token + "': " + str(postProbs[i]))
-                            if self.evidences[token][i] != 0:
-                                # evidence = self.wordSen[token][i] * self.priors[i]
-                                # evidence += ((sum(self.wordSen[token]) - self.wordSen[token][i]) * (sum(self.priors) - self.priors[i]))
-                                postProbs[i] /= float(self.evidences[token][i])
-                            # print("Position " + str(i) + " - evidence after token '" + token + "': " + str(self.evidences[token][i]))
-                            # print(self.probWordOcc[token])
-                            # print(postProbs)
-                    postProbs[i] *= float(self.priors[i])
-                    # print("Final Probability is: " + str(postProbs))
+        for postIndex in range(len(sentiments)):
+            if self.position[postIndex] == 0:
+                postProbs = self.postCheck(postIndex)
                 predictedIndex = postProbs.index(max(postProbs))
                 if predictedIndex == 0:
-                    corrects.append(sentiments[posts] == 4)
-                    # print("postive: " + str(sentiments[posts] == 4))
+                    corrects.append(sentiments[postIndex] == 4)
+                    # print("postive: " + str(sentiments[postIndex] == 4))
                 elif predictedIndex == 1:
-                    corrects.append(sentiments[posts] == 0)
-                    # print("negative: " + str(sentiments[posts] == 0))
+                    corrects.append(sentiments[postIndex] == 0)
+                    # print("negative: " + str(sentiments[postIndex] == 0))
                 else:
-                    corrects.append(sentiments[posts] == 2)
-                    # print("neutral: " + str(sentiments[posts] == 2))
-
+                    corrects.append(sentiments[postIndex] == 2)
+                    # print("neutral: " + str(sentiments[postIndex] == 2))
         ##print(corrects)
         numCorrects = sum(corrects)
         numTests = len(corrects)
@@ -145,101 +146,7 @@ class sentiLearn:
         tests.append(accuracy)
         # print("The number of correctly predicted posts is " + str(numCorrects) + " out of " + str(numTests) + ".")
         # print("The accuracy was " + str(accuracy) + "%")
-        return accuracy    
-
-# Checks for negations in sentences and creates a list of affected words
-# def negCheck(tokens):
-    # positives = []
-    # negatives = []
-    # currentSentence = []
-    # negative = False
-    # for token in tokens:
-        # if(token in negation):
-            # negative = true
-        # elif(re.match('[.!?]+')):
-            # if negative:
-                # negatives.extend(currentSentence)
-                # currentSentence = []
-                # negative = false
-            # else:
-                # positives.extend(currentSentence)
-                # currentSentence = []
-    ##if not currentSentence:
-    ##   break
-    # if negative:
-        # negatives.extend(currentSentence)
-        # currentSentence = []
-        # negative = false
-    # else:
-        # positives.extend(currentSentence)
-        # currentSentence = []
-    # return (positives,negatives)
-
-# def negTesting():
-    # Divide into training and test data - randomly allocate 4/5 to training and 1/5 to test
-    # position = []
-    # posPosts = []
-    # negPosts = []
-    # neuPosts = []
-    # for posts in range(0,len(sentiments)):
-        # position.insert(posts,random.randint(0,4))
-        # if position[posts] != 0:
-            # posNegs = negCheck(tokens[posts])
-            # if sentiments[posts] == 4:
-                # posPosts.extend(posNegs[0])
-                # negPosts.extend(posNegs[1])
-            # elif sentiments[posts] == 0:
-                # negPosts.extend(posNegs[1])
-                # posPosts.extend(posNegs[0])
-            # else:
-                # neuPosts.extend(posNegs[0])
-                # neuPosts.extend(posNegs[1])
-
-    # wordBag = defaultdict(list)
-    # for token in posPosts:
-        # wordBag[token].append(5)
-    # for token in negPosts:
-        # wordBag[token].append(-5)
-
-    # for token in neuPosts:
-        # wordBag[token].append(0)
-
-    # wordSen = {}
-    # for word in wordBag:
-    #    print("Word: " + word + ", instances: " + str(len(wordBag[word])) + ", values: ")
-    #    for value in wordBag[word]:
-    #            print(value, end=" ")
-    #    print("Total = " + str(sum(wordBag[word])))
-        # wordSen[word] = sum(wordBag[word]) / float(len(wordBag[word]))
-    #    print("word: " + word + ", word sentiment: " + str(wordSen[word]))
-        
-    #testing phase
-    # corrects = []
-    # for posts in range(0,len(sentiments)):
-        # if position[posts] == 0:
-            # score = 0
-            # for token in tokens[posts]:
-                # if token in wordSen:
-                    # score += float(wordSen[token])
-    #                print(score)
-            # if score >= 2.5:
-                # corrects.append(sentiments[posts] == 4)
-    #            print("postive: " + str(sentiments[posts] == 4))
-            # elif score <= -2.5:
-                # corrects.append(sentiments[posts] == 0)
-    #            print("negative: " + str(sentiments[posts] == 0))
-            # else:
-                # corrects.append(sentiments[posts] == 2)
-    #            print("neutral: " + str(sentiments[posts] == 2))
-                
-    #print(corrects)
-    # numCorrects = sum(corrects)
-    # numTests = len(corrects)
-    # accuracy = float(numCorrects*100/float(numTests))
-    # tests.append(accuracy)
-    # print("The number of correctly predicted posts is " + str(numCorrects) + " out of " + str(numTests) + ".")
-    # print("The accuracy was " + str(accuracy) + "%")
-    # return accuracy
+        return accuracy
 
 output = open('SentiTweetsOutput.csv', 'ab')
 writer = csv.writer(output, 'excel')
@@ -252,6 +159,7 @@ print(tests)
 writer.writerow(tests)
 output.close()
 
+# Checks for negations in sentences and creates a list of affected words
 tests = []
 output = open('negClauseLearnOutput.csv', 'ab')
 writer = csv.writer(output, 'excel')
