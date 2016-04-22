@@ -46,92 +46,36 @@ class negClauseLearner:
         # print(negatives)
         return (positives,negatives,negativeSenNum)
 
-    #tokenizer = TweetTokenizer()
-    #csvfile = open('trainingandtestdata/testdata.manual.2009.06.14.csv', 'rb')
-    #reader = csv.reader(csvfile, delimiter=',')
-    #rownum = 0
-    #sentiments = []
-    #tokens = [[]]
-    #for row in reader:
-    #    colnum = 0
-    #    for col in row:
-    #        if colnum == 0:
-    #            sentiments.insert(rownum,int(col))
-    #        if colnum == 5:
-    #            raw = col #.read().decode('utf8')
-    #            tokens.insert(rownum,tokenizer.tokenize(raw))
-    ##            print("tokens contents:", end='')
-    ##            for word in tokens[rownum]:
-    ##                print(word, end = " ")
-    ##            print()
-     #       colnum += 1
-     #   rownum += 1
-    #csvfile.close()
-
-    def negTesting(self, sentiments, tokens):
-        #Divide into training and test data - randomly allocate 4/5 to training and 1/5 to test
-        position = []
-        posPosts = []
-        negPosts = []
-        neuPosts = []
-        for posts in range(0,len(sentiments)):
-            position.insert(posts,random.randint(0,4))
-            if position[posts] != 0:
-                posNegs = self.negCheck(tokens[posts])
-                if sentiments[posts] == 4:
-                    posPosts.extend(posNegs[0])
-                    negPosts.extend(posNegs[1])
-                elif sentiments[posts] == 0:
-                    negPosts.extend(posNegs[1])
-                    posPosts.extend(posNegs[0])
-                else:
-                    neuPosts.extend(posNegs[0])
-                    neuPosts.extend(posNegs[1])
-
-        wordBag = defaultdict(list)
-        for token in posPosts:
-            wordBag[token].append(5)
-        for token in negPosts:
-            wordBag[token].append(-5)
-
-        for token in neuPosts:
-            wordBag[token].append(0)
-
-        wordSen = {}
-        for word in wordBag:
-        ##    print("Word: " + word + ", instances: " + str(len(wordBag[word])) + ", values: ")
-        ##    for value in wordBag[word]:
-        ##            print(value, end=" ")
-        ##    print("Total = " + str(sum(wordBag[word])))
-            wordSen[word] = sum(wordBag[word]) / float(len(wordBag[word]))
-        ##    print("word: " + word + ", word sentiment: " + str(wordSen[word]))
-            
-        #testing phase
+    def negTesting(self, mainTest, sentiments, tokens):
+        ## testing phase
         corrects = []
-        for postPosition in range(0,len(sentiments)):
-            if position[postPosition] == 0:
-                score = 0
-                for token in tokens[postPosition]:
-                    if token in wordSen:
-                        score += float(wordSen[token])
-        ##                print(score)
-                if score >= 2.5:
-                    corrects.append(sentiments[postPosition] == 4)
-        ##            print("postive: " + str(sentiments[postPosition] == 4))
-                elif score <= -2.5:
-                    corrects.append(sentiments[postPosition] == 0)
-        ##            print("negative: " + str(sentiments[postPosition] == 0))
+        for postIndex in range(len(sentiments)):
+            if mainTest.position[postIndex] == 0:
+                postProbs = mainTest.postCheck(postIndex)
+                predictedIndex = postProbs.index(max(postProbs))
+                ## Check for negations in the file to apply offsets
+                divided = self.negCheck(tokens[postIndex])
+                ## If any clauses with a negation is found
+                if divided[2] != 0:
+                    for i in range(3):
+                        postProbs[i] += self.offsets[predictedIndex][i]
+                predictedIndex = postProbs.index(max(postProbs))
+                if predictedIndex == 0:
+                    corrects.append(sentiments[postIndex] == 4)
+                    # print("postive: " + str(sentiments[postIndex] == 4))
+                elif predictedIndex == 1:
+                    corrects.append(sentiments[postIndex] == 0)
+                    # print("negative: " + str(sentiments[postIndex] == 0))
                 else:
-                    corrects.append(sentiments[postPosition] == 2)
-        ##            print("neutral: " + str(sentiments[postPosition] == 2))
-                
-        #print(corrects)
+                    corrects.append(sentiments[postIndex] == 2)
+                    # print("neutral: " + str(sentiments[postIndex] == 2))
+        # print(corrects)
         numCorrects = sum(corrects)
-        numTestCases = len(corrects)
-        accuracy = float(numCorrects * 100/float(numTestCases))
-#       print("The number of correctly predicted posts is " + str(numCorrects) + " out of " + str(numTestCases))
+        numTests = len(corrects)
+        accuracy = float(numCorrects*100/float(numTests))
+        # print("The number of correctly predicted posts is " + str(numCorrects) + " out of " + str(numTests) + ".")
+        # print("The accuracy was " + str(accuracy) + "%")
         return accuracy
-#print ("Total Accuracy: " + str(negTesting(sentiments)) + "%")
 
     def trainNeg(self,mainTest,sentiments,tokens):
         predicted = [[]]
@@ -171,8 +115,8 @@ class negClauseLearner:
                 if actualIndex != predictedIndex:
                     divided = self.negCheck(tokens[postPosition])
                     if divided[2] != 0:
-                        print("Predicted place was " + str(predictedIndex) + " with " + str(postProbs[predictedIndex])) 
-                        print("Actual was " + str(actualIndex) + " with " + str(postProbs[actualIndex]))
+                        # print("Predicted place was " + str(predictedIndex) + " with " + str(postProbs[predictedIndex])) 
+                        # print("Actual was " + str(actualIndex) + " with " + str(postProbs[actualIndex]))
                         ## Offset for sentence is the difference between the predicted sentiment and the actual, divided by the number of negative sentences
                         differences[actualIndex][predictedIndex].append((postProbs[predictedIndex] - postProbs[actualIndex])/float(divided[2]))
         # print("First column: " + str(differences[0]))
@@ -187,4 +131,4 @@ class negClauseLearner:
                     self.offsets[column][row] = offset
                 else:
                     self.offsets[column][row] = 0.0
-        print(self.offsets)        
+        # print(self.offsets)        

@@ -120,7 +120,7 @@ class sentiLearn:
                     # print(self.probWordOcc[token])
                     # print(postProbs)
             postProbs[i] *= float(self.priors[i])
-        print("Final Probability is: " + str(postProbs))
+        # print("Final Probability is: " + str(postProbs))
         return postProbs
 
     def test(self):    
@@ -143,7 +143,7 @@ class sentiLearn:
         numCorrects = sum(corrects)
         numTests = len(corrects)
         accuracy = float(numCorrects*100/float(numTests))
-        tests.append(accuracy)
+        # tests.append(accuracy)
         # print("The number of correctly predicted posts is " + str(numCorrects) + " out of " + str(numTests) + ".")
         # print("The accuracy was " + str(accuracy) + "%")
         return accuracy
@@ -155,7 +155,7 @@ sentTest = sentiLearn()
 for t in range(0,5):
     sentTest.train()
     tests.append(sentTest.test())
-print(tests)
+print("Standard test accuracy: " + str(tests))
 writer.writerow(tests)
 output.close()
 
@@ -164,10 +164,11 @@ tests = []
 output = open('negClauseLearnOutput.csv', 'ab')
 writer = csv.writer(output, 'excel')
 negClauseTest = negClauseLearner()
-negClauseTest.trainNeg(sentTest,sentiments,tokens)
 for t in range(0,5):
-    tests.append(negClauseTest.negTesting(sentiments,tokens))
-print(tests)
+    sentTest.train()
+    negClauseTest.trainNeg(sentTest,sentiments,tokens)
+    tests.append(negClauseTest.negTesting(sentTest,sentiments,tokens))
+print("Negation test accuracy: " + str(tests))
 writer.writerow(tests)
 output.close()
 
