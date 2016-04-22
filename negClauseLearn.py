@@ -164,12 +164,10 @@ class negClauseLearner:
                 actualIndex = pow(sentiments[postPosition],2) + 1
                 actualIndex = int(actualIndex % 5 - 2)
                 actualIndex = int(abs(actualIndex))
-                # fabs(((pow(sentiments[postPosition]),2)+1) % 5 - 2)
                 # for i in [4,0,2]:
                     # test = pow(i,2) + 1
                     # test = int(test % 5 - 2)
                     # print (abs(test))
-                    # print (fabs((((pow(i,2) + 1) % 5) - 2)))
                 if actualIndex != predictedIndex:
                     divided = self.negCheck(tokens[postPosition])
                     if divided[2] != 0:
@@ -189,16 +187,4 @@ class negClauseLearner:
                     self.offsets[column][row] = offset
                 else:
                     self.offsets[column][row] = 0.0
-        print(self.offsets)
-            # print(differences)
-                # elif sentiments[postPosition] == 0:
-                    # if predictedIndex != 1:
-                        # differences[1][predictedIndex].append(postProbs[predictedIndex] - postProbs[1])
-                        # divided = negCheck(tokens(postPosition))
-                # else:
-                    # if predictedIndex != 2:
-                        # differences[2][predictedIndex].append(postProbs[predictedIndex] - postProbs[2])
-                        # divided = self.negCheck(tokens[postPosition])
-
-    # def suf(self):
-        
+        print(self.offsets)        
