@@ -155,7 +155,7 @@ sentTest = sentiLearn()
 for t in range(0,5):
     sentTest.train()
     tests.append(sentTest.test())
-print("Standard test accuracy: " + str(tests))
+print("Standard test accuracy: " + str(tests) + ", avg: " + str(sum(tests) / float(len(tests))))
 writer.writerow(tests)
 output.close()
 
@@ -168,7 +168,7 @@ for t in range(0,5):
     sentTest.train()
     negClauseTest.trainNeg(sentTest,sentiments,tokens)
     tests.append(negClauseTest.negTesting(sentTest,sentiments,tokens))
-print("Negation test accuracy: " + str(tests))
+print("Negation test accuracy: " + str(tests) + ", avg: " + str(sum(tests) / float(len(tests))))
 writer.writerow(tests)
 output.close()
 
@@ -177,10 +177,31 @@ output = open('emotIdenOutput.csv', 'ab')
 writer = csv.writer(output, 'excel')
 emotIdenTest = emoticonLearner()
 for t in range(0,5):
-    tests.append(emotIdenTest.emoticonTesting(sentiments,tokens))
-print(tests)
+    splitted = emotIdenTest.emoteStrip(tokens)
+    tokens = splitted[0]
+    sentTest.train()
+    emotIdenTest.trainEmotes(sentTest,sentiments,tokens,splitted[1])
+    tests.append(emotIdenTest.emoticonTesting(sentTest,sentiments,tokens,splitted[1]))
+print("Emoticon accuracy: " + str(tests) + ", avg: " + str(sum(tests) / float(len(tests))))
 writer.writerow(tests)
 output.close()
+
+tests = []
+# output = open('emotIdenOutput.csv', 'ab')
+# writer = csv.writer(output, 'excel')
+# emotIdenTest = emoticonLearner()
+for t in range(0,5):
+    splitted = emotIdenTest.emoteStrip(tokens)
+    tokens = splitted[0]
+    sentTest.train()
+    negClauseTest.trainNeg(sentTest,sentiments,tokens)
+    emotIdenTest.trainEmotes(sentTest,sentiments,tokens,splitted[1])
+    tests.append(emotIdenTest.emoticonTesting(sentTest,sentiments,tokens,splitted[1]))
+print("Combined accuracy: " + str(tests) + ", avg: " + str(sum(tests) / float(len(tests))))
+# writer.writerow(tests)
+# output.close()
+
+
 
 tests = []
 output = open('bigramOutput.csv', 'ab')
