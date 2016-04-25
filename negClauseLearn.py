@@ -46,36 +46,18 @@ class negClauseLearner:
         # print(negatives)
         return (positives,negatives,negativeSenNum)
 
-    def negTesting(self, mainTest, sentiments, tokens):
+    def negTesting(self, mainTest, sentiments, tokens, postProbs):
         ## testing phase
-        corrects = []
         for postIndex in range(len(sentiments)):
             if mainTest.position[postIndex] == 0:
-                postProbs = mainTest.postCheck(postIndex)
-                predictedIndex = postProbs.index(max(postProbs))
+                predictedIndex = postProbs[postIndex].index(max(postProbs[postIndex]))
                 ## Check for negations in the file to apply offsets
                 divided = self.negCheck(tokens[postIndex])
                 ## If any clauses with a negation is found
                 if divided[2] != 0:
                     for i in range(3):
-                        postProbs[i] += self.offsets[predictedIndex][i]
-                predictedIndex = postProbs.index(max(postProbs))
-                if predictedIndex == 0:
-                    corrects.append(sentiments[postIndex] == 4)
-                    # print("postive: " + str(sentiments[postIndex] == 4))
-                elif predictedIndex == 1:
-                    corrects.append(sentiments[postIndex] == 0)
-                    # print("negative: " + str(sentiments[postIndex] == 0))
-                else:
-                    corrects.append(sentiments[postIndex] == 2)
-                    # print("neutral: " + str(sentiments[postIndex] == 2))
-        # print(corrects)
-        numCorrects = sum(corrects)
-        numTests = len(corrects)
-        accuracy = float(numCorrects*100/float(numTests))
-        # print("The number of correctly predicted posts is " + str(numCorrects) + " out of " + str(numTests) + ".")
-        # print("The accuracy was " + str(accuracy) + "%")
-        return accuracy
+                        postProbs[postIndex][i] += self.offsets[predictedIndex][i]
+        return postProbs
 
     def trainNeg(self,mainTest,sentiments,tokens):
         predicted = [[]]

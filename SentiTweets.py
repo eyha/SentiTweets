@@ -125,11 +125,26 @@ class sentiLearn:
 
     def test(self):    
         #testing phase
-        corrects = []
+        postProbs = []
+        print(self.position.count(0))
         for postIndex in range(len(sentiments)):
             if self.position[postIndex] == 0:
-                postProbs = self.postCheck(postIndex)
-                predictedIndex = postProbs.index(max(postProbs))
+                # print(postIndex)
+                postProbs.insert(postIndex,self.postCheck(postIndex))
+            else:
+                postProbs.insert(postIndex,0)
+        print(len(postProbs))
+        return postProbs
+        
+    def results(self, postProbs):
+        corrects = []
+        print(len(postProbs))
+        for postIndex in range(len(sentiments)):
+            if self.position[postIndex] == 0:
+                # print(postIndex)
+                # print(postIndex)
+                # print(postProbs[postIndex])
+                predictedIndex = postProbs[postIndex].index(max(postProbs[postIndex]))
                 if predictedIndex == 0:
                     corrects.append(sentiments[postIndex] == 4)
                     # print("postive: " + str(sentiments[postIndex] == 4))
@@ -154,7 +169,8 @@ writer = csv.writer(output, 'excel')
 sentTest = sentiLearn()    
 for t in range(0,5):
     sentTest.train()
-    tests.append(sentTest.test())
+    postProbs = sentTest.test()
+    tests.append(sentTest.results(postProbs))
 print("Standard test accuracy: " + str(tests) + ", avg: " + str(sum(tests) / float(len(tests))))
 writer.writerow(tests)
 output.close()
@@ -167,7 +183,9 @@ negClauseTest = negClauseLearner()
 for t in range(0,5):
     sentTest.train()
     negClauseTest.trainNeg(sentTest,sentiments,tokens)
-    tests.append(negClauseTest.negTesting(sentTest,sentiments,tokens))
+    postProbs = sentTest.test()
+    postProbs = negClauseTest.negTesting(sentTest,sentiments,tokens,postProbs)
+    tests.append(sentTest.results(postProbs))
 print("Negation test accuracy: " + str(tests) + ", avg: " + str(sum(tests) / float(len(tests))))
 writer.writerow(tests)
 output.close()
@@ -181,7 +199,9 @@ for t in range(0,5):
     tokens = splitted[0]
     sentTest.train()
     emotIdenTest.trainEmotes(sentTest,sentiments,tokens,splitted[1])
-    tests.append(emotIdenTest.emoticonTesting(sentTest,sentiments,tokens,splitted[1]))
+    postProbs = sentTest.test()
+    postProbs = emotIdenTest.emoticonTesting(sentTest,sentiments,tokens,splitted[1],postProbs)
+    tests.append(sentTest.results(postProbs))
 print("Emoticon accuracy: " + str(tests) + ", avg: " + str(sum(tests) / float(len(tests))))
 writer.writerow(tests)
 output.close()
@@ -196,12 +216,13 @@ for t in range(0,5):
     sentTest.train()
     negClauseTest.trainNeg(sentTest,sentiments,tokens)
     emotIdenTest.trainEmotes(sentTest,sentiments,tokens,splitted[1])
-    tests.append(emotIdenTest.emoticonTesting(sentTest,sentiments,tokens,splitted[1]))
+    postProbs = sentTest.test()
+    postProbs = negClauseTest.negTesting(sentTest,sentiments,tokens,postProbs)
+    postProbs = emotIdenTest.emoticonTesting(sentTest,sentiments,tokens,splitted[1],postProbs)
+    tests.append(sentTest.results(postProbs))
 print("Combined accuracy: " + str(tests) + ", avg: " + str(sum(tests) / float(len(tests))))
 # writer.writerow(tests)
 # output.close()
-
-
 
 tests = []
 output = open('bigramOutput.csv', 'ab')

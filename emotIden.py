@@ -53,38 +53,19 @@ class emoticonLearner:
                 # print("The emoticons are " + str(postEmotes[postIndex]))
         return [tokens,postEmotes]
     
-    def emoticonTesting(self, mainTest, sentiments, tokens,postEmotes):
+    def emoticonTesting(self, mainTest, sentiments, tokens,postEmotes, postProbs):
         ## testing phase
-        corrects = []
         for postIndex in range(len(sentiments)):
             if mainTest.position[postIndex] == 0:
-                postProbs = mainTest.postCheck(postIndex)
-                predictedIndex = postProbs.index(max(postProbs))
+                predictedIndex = postProbs[postIndex].index(max(postProbs[postIndex]))
                 ## Check for emoticons in the post to apply offsets
-                ## If any clauses with a negation is found
                 if len(postEmotes[postIndex]) != 0:
                     for emote in postEmotes[postIndex]:
                         if self.offsets.has_key(emote):
                             for i in range(3):
-                                postProbs[i] += self.offsets[emote][predictedIndex][i]
-                predictedIndex = postProbs.index(max(postProbs))
-                if predictedIndex == 0:
-                    corrects.append(sentiments[postIndex] == 4)
-                    # print("postive: " + str(sentiments[postIndex] == 4))
-                elif predictedIndex == 1:
-                    corrects.append(sentiments[postIndex] == 0)
-                    # print("negative: " + str(sentiments[postIndex] == 0))
-                else:
-                    corrects.append(sentiments[postIndex] == 2)
-                    # print("neutral: " + str(sentiments[postIndex] == 2))
-        # print(corrects)
-        numCorrects = sum(corrects)
-        numTests = len(corrects)
-        accuracy = float(numCorrects*100/float(numTests))
-        # print("The number of correctly predicted posts is " + str(numCorrects) + " out of " + str(numTests) + ".")
-        # print("The accuracy was " + str(accuracy) + "%")
-        return accuracy
-        
+                                postProbs[postIndex][i] += self.offsets[emote][predictedIndex][i]
+        return postProbs
+                                
     def trainEmotes(self,mainTest,sentiments,tokens,postEmotes):
         predicted = [[]]
         postNumber = 0
