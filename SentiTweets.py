@@ -126,19 +126,19 @@ class sentiLearn:
     def test(self):    
         #testing phase
         postProbs = []
-        print(self.position.count(0))
+        # print(self.position.count(0))
         for postIndex in range(len(sentiments)):
             if self.position[postIndex] == 0:
                 # print(postIndex)
                 postProbs.insert(postIndex,self.postCheck(postIndex))
             else:
                 postProbs.insert(postIndex,0)
-        print(len(postProbs))
+        # print(len(postProbs))
         return postProbs
         
     def results(self, postProbs):
         corrects = []
-        print(len(postProbs))
+        # print(len(postProbs))
         for postIndex in range(len(sentiments)):
             if self.position[postIndex] == 0:
                 # print(postIndex)
@@ -207,9 +207,8 @@ writer.writerow(tests)
 output.close()
 
 tests = []
-# output = open('emotIdenOutput.csv', 'ab')
-# writer = csv.writer(output, 'excel')
-# emotIdenTest = emoticonLearner()
+output = open('CombinedOutput.csv', 'ab')
+writer = csv.writer(output, 'excel')
 for t in range(0,5):
     splitted = emotIdenTest.emoteStrip(tokens)
     tokens = splitted[0]
@@ -221,15 +220,15 @@ for t in range(0,5):
     postProbs = emotIdenTest.emoticonTesting(sentTest,sentiments,tokens,splitted[1],postProbs)
     tests.append(sentTest.results(postProbs))
 print("Combined accuracy: " + str(tests) + ", avg: " + str(sum(tests) / float(len(tests))))
-# writer.writerow(tests)
-# output.close()
-
-tests = []
-output = open('bigramOutput.csv', 'ab')
-writer = csv.writer(output, 'excel')
-bigramTest = bigramLearner()
-for t in range(0,5):
-    tests.append(bigramTest.bigramTesting(sentiments,tokens))
-print(tests)
 writer.writerow(tests)
 output.close()
+
+# tests = []
+# output = open('bigramOutput.csv', 'ab')
+# writer = csv.writer(output, 'excel')
+# bigramTest = bigramLearner()
+# for t in range(0,5):
+    # tests.append(bigramTest.bigramTesting(sentiments,tokens))
+# print(tests)
+# writer.writerow(tests)
+# output.close()
